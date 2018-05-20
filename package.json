@@ -21,6 +21,7 @@
     "babel-preset-env": "^1.6.1",
     "dotenv": "^5.0.0",
     "dsteem": "^0.8.7",
+    "twilio": "^3.15.1",
     "superagent": "^3.8.2"
   },
   "bugs": {

@@ -63,9 +63,10 @@ The `INTERVAL` - how often it should check for missed blocks - is in minutes. An
 
 ```
 ACTIVE_KEY=
-NEXMO_API_KEY=
-NEXMO_API_SECRET=
+API_KEY=
+API_SECRET=
 PHONE_NUMBER=
+FROM_NUMBER=
 ```
 
 Make sure that you include your country-code in your phone_number - e.g. `49123456789` (+49 would be Germany)

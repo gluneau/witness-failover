@@ -1,7 +1,7 @@
 const fs = require('fs')
 const request = require('superagent')
 const dotenv = require('dotenv').config()
-
+const client = require('twilio')(process.env.API_KEY, process.env.API_SECRET);
 const dsteem = require('dsteem')
 
 let config = JSON.parse(fs.readFileSync('config.json'))
@@ -93,8 +93,8 @@ let check_missing_variables = async () => {
 
     if(config.USE_SMS_ALERT === enums.ENABLED) {
       if(!process.env.PHONE_NUMBER) env_missing.push('PHONE_NUMBER')
-      if(!process.env.NEXMO_API_KEY) env_missing.push('NEXMO_API_KEY')
-      if(!process.env.NEXMO_API_SECRET) env_missing.push('NEXMO_API_SECRET')
+      if(!process.env.API_KEY) env_missing.push('API_KEY')
+      if(!process.env.API_SECRET) env_missing.push('API_SECRET')
     }
 
     if(env_missing.length > 0 || config_missing.length > 0) {
@@ -134,8 +134,13 @@ let update_witness = async (key, retries = 0) => {
 let send_sms = async (message) => {
   try {
     if(!config.TEST_MODE || config.TEST_MODE === enums.DISABLED) {
-      let response = await request.post('https://rest.nexmo.com/sms/json')
-      .query({ to: process.env.PHONE_NUMBER, from: 'Witness-Failover', text: message, api_key: process.env.NEXMO_API_KEY, api_secret: process.env.NEXMO_API_SECRET })
+      if (config.SMS_PROVIDER == 'nexmo') {
+        let response = await request.post('https://rest.nexmo.com/sms/json')
+        .query({ to: process.env.PHONE_NUMBER, from: 'Witness-Failover', text: message, api_key: process.env.API_KEY, api_secret: process.env.API_SECRET })
+      } else {
+        let response = await client.messages
+        .create({ to: process.env.PHONE_NUMBER, from: process.env.FROM_NUMBER, body: message })
+      }
       console.log('Send SMS successfully!')
       return response
     } else {
